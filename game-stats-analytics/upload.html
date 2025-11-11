@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cargar Juegos - GameStats Analytics</title>
+    
+    <!-- Apple Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Apple-style Navigation -->
+    <header class="apple-navbar">
+        <nav class="container">
+            <div class="nav-content">
+                <div class="nav-brand">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 2L13.09 8.26L20 9L13.09 9.74L12 16L10.91 9.74L4 9L10.91 8.26L12 2Z" fill="currentColor"/>
+                        <circle cx="12" cy="19" r="2" fill="currentColor"/>
+                    </svg>
+                    <span>GameStats Analytics</span>
+                </div>
+                <div class="nav-menu" id="navMenu">
+                    <a href="index.html" class="nav-item">Inicio</a>
+                    <a href="upload.html" class="nav-item active">Cargar Juegos</a>
+                    <a href="#" class="nav-item" id="clearDataBtn">Limpiar Datos</a>
+                </div>
+                <div class="nav-toggle" id="navToggle">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Upload Hero Section -->
+    <main class="main-content">
+        <section class="upload-hero">
+            <div class="container">
+                <div class="upload-hero-content">
+                    <h1 class="upload-title">Cargar Lista de <span class="text-gradient">Juegos</span></h1>
+                    <p class="upload-subtitle">Sube un archivo TXT y obtén estadísticas detalladas de tus juegos favoritos</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Upload Content -->
+        <section class="upload-section">
+            <div class="container">
+                <div class="upload-container">
+                    <!-- Upload Card -->
+                    <div class="upload-card">
+                        <!-- Instructions -->
+                        <div class="upload-instructions">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.5"/>
+                                <path d="M12 6v6M12 16h.01" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                            </svg>
+                            <h3>Instrucciones</h3>
+                            <ul>
+                                <li>Carga un archivo .txt con nombres de juegos</li>
+                                <li>Cada juego debe estar en una línea separada</li>
+                                <li>Ejemplo: "The Witcher 3", "Cyberpunk 2077", "Elden Ring"</li>
+                                <li>Los datos se guardarán en tu navegador (LocalStorage)</li>
+                                <li>El scraping puede tardar varios segundos por juego</li>
+                            </ul>
+                        </div>
+
+                        <!-- File Upload Area -->
+                        <div class="upload-area">
+                            <label for="fileInput" class="file-upload-label">
+                                <div class="file-upload-content">
+                                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M14 2H6C5.46957 2 4.96086 2.21071 4.58579 2.58579C4.21071 2.96086 4 3.46957 4 4V20C4 20.5304 4.21071 21.0391 4.58579 21.4142C4.96086 21.7893 5.46957 22 6 22H18C18.5304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21.0391 20 20.5304 20 20V8L14 2Z" stroke="currentColor" stroke-width="1.5"/>
+                                        <path d="M14 2V8H20" stroke="currentColor" stroke-width="1.5"/>
+                                        <path d="M16 13H8M16 17H8M10 9H8" stroke="currentColor" stroke-width="1.5"/>
+                                    </svg>
+                                    <h4>Seleccionar archivo TXT</h4>
+                                    <p>Arrastra y suelta tu archivo aquí, o haz clic para seleccionar</p>
+                                </div>
+                            </label>
+                            <input type="file" class="file-input" id="fileInput" accept=".txt">
+                        </div>
+
+                        <!-- Preview Section -->
+                        <div id="previewSection" class="preview-section" style="display: none;">
+                            <h4>Vista previa de juegos:</h4>
+                            <div class="preview-content">
+                                <pre id="previewContent"></pre>
+                            </div>
+                            <p class="preview-count">Total de juegos: <span id="gameCount">0</span></p>
+                        </div>
+
+                        <!-- Process Button -->
+                        <div class="process-section">
+                            <button id="processBtn" class="apple-button apple-button-large" disabled>
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.5"/>
+                                    <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z" stroke="currentColor" stroke-width="1.5"/>
+                                </svg>
+                                Procesar y Guardar Juegos
+                            </button>
+                        </div>
+
+                        <!-- Progress Section -->
+                        <div id="progressSection" class="progress-section" style="display: none;">
+                            <h4>Progreso</h4>
+                            <div class="progress-bar-container">
+                                <div id="progressBar" class="progress-bar"></div>
+                            </div>
+                            <p id="progressText" class="progress-text">Procesando...</p>
+                        </div>
+
+                        <!-- Results Section -->
+                        <div id="resultsSection" class="results-section" style="display: none;">
+                            <div class="success-message">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M9 12L11 14L15 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+                                </svg>
+                                <h4>¡Completado!</h4>
+                                <p>
+                                    Juegos procesados exitosamente: <span id="successCount">0</span><br>
+                                    Juegos no encontrados: <span id="errorCount">0</span>
+                                </p>
+                            </div>
+                            <a href="index.html" class="apple-button">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" stroke-width="1.5"/>
+                                    <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.5"/>
+                                </svg>
+                                Ver Juegos Cargados
+                            </a>
+                        </div>
+
+                        <!-- Error List -->
+                        <div id="errorList" class="error-list" style="display: none;">
+                            <div class="warning-message">
+                                <h5>Juegos no encontrados:</h5>
+                                <ul id="errorGames"></ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Example Card -->
+                    <div class="example-card">
+                        <h4>
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M14 2H6C5.46957 2 4.96086 2.21071 4.58579 2.58579C4.21071 2.96086 4 3.46957 4 4V20C4 20.5304 4.21071 21.0391 4.58579 21.4142C4.96086 21.7893 5.46957 22 6 22H18C18.5304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21.0391 20 20.5304 20 20V8L14 2Z" stroke="currentColor" stroke-width="1.5"/>
+                                <path d="M14 2V8H20" stroke="currentColor" stroke-width="1.5"/>
+                            </svg>
+                            Ejemplo de archivo TXT
+                        </h4>
+                        <div class="example-content">
+                            <pre>The Witcher 3
+Cyberpunk 2077
+Elden Ring
+Red Dead Redemption 2
+Grand Theft Auto V</pre>
+                        </div>
+                        <button id="downloadExample" class="apple-button apple-button-secondary">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M21 15V19C21 19.5304 20.7893 20.0391 20.4142 20.4142C20.0391 20.7893 19.5304 21 19 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                <polyline points="7,10 12,15 17,10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                <line x1="12" y1="15" x2="12" y2="3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                            </svg>
+                            Descargar ejemplo
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Apple-style Footer -->
+    <footer class="apple-footer">
+        <div class="container">
+            <p>&copy; 2024 GameStats Analytics. Datos obtenidos mediante web scraping</p>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+
+        const BACKEND_URL = 'https://heroic-tenderness-production.up.railway.app';
+        
+        let gamesList = [];
+
+        // File input handler
+        document.getElementById('fileInput').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    const content = event.target.result;
+                    gamesList = content.split('\n')
+                        .map(line => line.trim())
+                        .filter(line => line.length > 0);
+                    
+                    document.getElementById('previewContent').textContent = gamesList.join('\n');
+                    document.getElementById('gameCount').textContent = gamesList.length;
+                    document.getElementById('previewSection').style.display = 'block';
+                    document.getElementById('processBtn').disabled = false;
+                };
+                reader.readAsText(file);
+            }
+        });
+
+        // Process button handler
+        document.getElementById('processBtn').addEventListener('click', async () => {
+            if (gamesList.length === 0) return;
+
+            document.getElementById('processBtn').disabled = true;
+            document.getElementById('progressSection').style.display = 'block';
+            document.getElementById('resultsSection').style.display = 'none';
+            document.getElementById('errorList').style.display = 'none';
+
+            let successCount = 0;
+            let errorCount = 0;
+            const errorGames = [];
+            const allGamesData = [];
+
+            for (let i = 0; i < gamesList.length; i++) {
+                const gameName = gamesList[i];
+                const progress = ((i + 1) / gamesList.length) * 100;
+                
+                document.getElementById('progressBar').style.width = progress + '%';
+                document.getElementById('progressText').textContent = 
+                    `Procesando ${i + 1} de ${gamesList.length}: ${gameName}`;
+
+                try {
+                    const gameData = await searchGame(gameName);
+                    if (gameData) {
+                        allGamesData.push(gameData);
+                        successCount++;
+                    } else {
+                        errorCount++;
+                        errorGames.push(gameName);
+                    }
+                } catch (error) {
+                    console.error(`Error processing ${gameName}:`, error);
+                    errorCount++;
+                    errorGames.push(gameName);
+                }
+
+                // Delay to avoid overwhelming the backend
+                await new Promise(resolve => setTimeout(resolve, 2000));
+            }
+
+            // Save to LocalStorage
+            try {
+                localStorage.setItem('gamesData', JSON.stringify(allGamesData));
+            } catch (error) {
+                console.error('Error saving to LocalStorage:', error);
+                alert('Error al guardar los datos. Puede que hayas excedido el límite de almacenamiento del navegador.');
+            }
+
+            // Show results
+            document.getElementById('successCount').textContent = successCount;
+            document.getElementById('errorCount').textContent = errorCount;
+            document.getElementById('resultsSection').style.display = 'block';
+
+            if (errorGames.length > 0) {
+                document.getElementById('errorList').style.display = 'block';
+                const errorList = document.getElementById('errorGames');
+                errorList.innerHTML = errorGames.map(game => `<li>${game}</li>`).join('');
+            }
+
+            document.getElementById('processBtn').disabled = false;
+        });
+
+        // Search game using backend scraper
+        async function searchGame(gameName) {
+            try {
+                const response = await fetch(`${BACKEND_URL}/api/search`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ gameName: gameName })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+
+                if (data && data.stores) {
+                    // Get data from the first available store
+                    const availableStores = Object.values(data.stores).filter(store => store !== null);
+                    
+                    if (availableStores.length === 0) {
+                        return null;
+                    }
+
+                    const primaryStore = availableStores[0];
+
+                    return {
+                        name: primaryStore.name || gameName,
+                        image: data.images && data.images.length > 0 ? data.images[0] : primaryStore.image,
+                        rating: 'N/A',
+                        platforms: data.platforms || [],
+                        genres: data.genres || [],
+                        price: data.bestPrice || primaryStore.price || 'Consultar tienda',
+                        discount: primaryStore.discount || null,
+                        stores: data.stores
+                    };
+                }
+                return null;
+            } catch (error) {
+                console.error('Error searching game:', error);
+                return null;
+            }
+        }
+
+        // Download example file
+        document.getElementById('downloadExample').addEventListener('click', () => {
+            const exampleContent = `The Witcher 3
+Cyberpunk 2077
+Elden Ring
+Red Dead Redemption 2
+Grand Theft Auto V`;
+            
+            const blob = new Blob([exampleContent], { type: 'text/plain' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'ejemplo_juegos.txt';
+            a.click();
+            window.URL.revokeObjectURL(url);
+        });
+
+        // Clear all data
+        document.getElementById('clearDataBtn').addEventListener('click', (e) => {
+            e.preventDefault();
+            if (confirm('¿Estás seguro de que quieres eliminar todos los juegos guardados?')) {
+                localStorage.removeItem('gamesData');
+                alert('Datos eliminados correctamente');
+            }
+        });
+    </script>
+</body>
+</html>
